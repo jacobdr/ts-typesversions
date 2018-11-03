@@ -1,3 +1,7 @@
+##### Custom additions
+dist
+
+##### Default node.js .gitignore
 # Logs
 logs
 *.log
