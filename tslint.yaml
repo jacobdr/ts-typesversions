@@ -1,0 +1,19 @@
+defaultSeverity: error
+extends:
+    - "tslint:recommended"
+    - tslint-config-airbnb
+    - tslint-immutable
+    - tslint-sonarts
+    - tslint-config-prettier
+rules:
+    import-name: false
+    member-access:
+        options:
+            - no-public
+    variable-name:
+        options:
+            - allow-leading-underscore
+    object-literal-sort-keys:
+        - true
+        - match-declaration-order
+rulesDirectory: []

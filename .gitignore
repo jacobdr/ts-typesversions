@@ -1,5 +1,6 @@
 ##### Custom additions
 dist
+.nvmrc
 
 ##### Default node.js .gitignore
 # Logs
