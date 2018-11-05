@@ -9,8 +9,12 @@ import { TupleLiteralToUnion } from "./Utils";
 // __dirname is dist
 const CONSUMING_PROJECT_ROOT = FileOps.join([__dirname, "..", "..", ".."], true);
 
-export interface IPackageJsonWithTypesVersions {
+interface IPackageJson {
+    main?: string;
+}
+export interface IPackageJsonWithTypesVersions extends IPackageJson {
     [TsConfig.TYPES_VERSIONS_KEY]: ITypesVersionsSection;
+    [TsConfig.TYPES_KEY]: string;
 }
 
 export class ConsumingTsProject {
@@ -35,7 +39,10 @@ export class ConsumingTsProject {
         tsVersions = this.tsVersions,
         performWrite = true
     ): BPromise<IPackageJsonWithTypesVersions> {
-        return BPromise.all([FileOps.readJson(this.packageJsonPath), this.tsConfig.outputDir])
+        return BPromise.all([
+            FileOps.readJson<IPackageJson>(this.packageJsonPath),
+            this.tsConfig.outputDir,
+        ])
             .then(([packageJson, outputDir]) => {
                 const packageJsonContents = packageJson.contents;
                 const typesVersionsContents = TsConfig.generateTypesVersionsSection(
@@ -44,10 +51,18 @@ export class ConsumingTsProject {
                     outputDir
                 );
 
+                const legacyTypesPath = TsConfig.generateTypesSectionPath(
+                    packageJson.contents.main,
+                    tsVersions,
+                    this.tsConfig.tsVersionsDirPrefix,
+                    outputDir
+                );
+                // TODO: Use webpack-merge below
                 return {
                     jsonContents: {
                         ...packageJsonContents,
                         [TsConfig.TYPES_VERSIONS_KEY]: typesVersionsContents,
+                        [TsConfig.TYPES_KEY]: legacyTypesPath,
                     },
                     fileAttributes: packageJson.fileAttributes,
                 };

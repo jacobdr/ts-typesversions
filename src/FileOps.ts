@@ -38,6 +38,10 @@ export class FileOps {
         return path.dirname(filePath);
     }
 
+    static baseName(filePath: string): FilePath {
+        return path.basename(filePath);
+    }
+
     static join(portions: string[], absolute: boolean): FilePath {
         const joinedPath = path.join(...portions);
         return absolute ? path.resolve(joinedPath) : joinedPath;

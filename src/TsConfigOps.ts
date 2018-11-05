@@ -23,6 +23,7 @@ type TsConfigRead = IReadJson<Partial<ITsConfigObject>>;
 
 export class TsConfig {
     static readonly TYPES_VERSIONS_KEY = "typesVersions";
+    static readonly TYPES_KEY = "types";
     static readonly defaultTsVersionsDirPrefix = "ts-types-versions-";
 
     static generateTypesVersionsSection(
@@ -30,7 +31,12 @@ export class TsConfig {
         tsVersionsDirPrefix: string,
         outputDirectory: string
     ): ITypesVersionsSection {
+        // Need to make sure to sort + reverse, since we want the great typescript versions at
+        // the top -- i.e. 3.2 needs to come before 3.1 for resolution to work properly
+        // https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#version-selection-with-typesversions
         return tsVersions
+            .sort()
+            .reverse()
             .map(version => ({
                 [`>=${version}`]: {
                     "*": [
@@ -42,6 +48,28 @@ export class TsConfig {
                 },
             }))
             .reduce((prev, current) => ({ ...prev, ...current }), {});
+    }
+
+    static generateTypesSectionPath(
+        packageJsonMainEntry: string | undefined,
+        tsVersions: IAllowedTsVersion[],
+        tsVersionsDirPrefix: string,
+        outputDirectory: string
+    ) {
+        const lowestVersion = tsVersions.sort()[0];
+        const currentPackageJsonEntryFile = packageJsonMainEntry
+            ? FileOps.baseName(packageJsonMainEntry)
+            : "index.js";
+        const entryDeclarationName = currentPackageJsonEntryFile.replace(".js", ".d.ts");
+
+        return FileOps.join(
+            [
+                outputDirectory,
+                this.typingsDirName(tsVersionsDirPrefix, lowestVersion),
+                entryDeclarationName,
+            ],
+            false
+        );
     }
 
     static typingsDirName(prefix: string, tsVersion: string) {
@@ -112,6 +140,7 @@ export class TsConfig {
                         noEmitOnError: true,
                     },
                 };
+
                 const mergeWithStrategy = merge.strategy({
                     "compilerOptions.declaration": "replace",
                     "compilerOptions.emitDeclarationOnly": "replace",
