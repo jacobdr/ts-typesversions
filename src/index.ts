@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import BPromise from "bluebird";
 import { ConsumingTsProject } from "./ConsumingTsProject";
 import { FileOps } from "./FileOps";
