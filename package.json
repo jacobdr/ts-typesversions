@@ -44,7 +44,8 @@
     "scripts": {
         "start": "rm -rf dist && yarn run tsc && node dist/index.js",
         "test": "exit 0",
-        "prepublishOnly": "yarn run prettier --debug-check && rm -rf dist && yarn run tsc"
+        "prepublishOnly": "yarn run prettier --debug-check && rm -rf dist && yarn run tsc",
+        "release": "yarn run np"
     },
     "typesVersions": {
         ">=3.1": {
