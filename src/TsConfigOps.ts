@@ -110,12 +110,6 @@ export class TsConfig {
             const outputFile = compilerOptions.outFile || compilerOptions.out;
             const outputFileDir = outputFile && FileOps.directoryName(outputFile);
             const outputDir = compilerOptions.outDir;
-            console.log("JDR DEBUG outDir candidates: ", {
-                outputFile,
-                outputFileDir,
-                compilerOptions,
-                outputDir,
-            });
             return outputDir || outputFileDir || ".";
         });
     }
