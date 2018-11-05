@@ -4,6 +4,10 @@ import { ConsumingTsProject } from "./ConsumingTsProject";
 import { FileOps } from "./FileOps";
 import { DEFAULT_TYPESCRIPT_VERSIONS } from "./TsVersions";
 
+export * from "./TsConfigOps";
+export * from "./TsBin";
+export * from "./TsVersions";
+
 function main() {
     return BPromise.resolve()
         .then(() => DEFAULT_TYPESCRIPT_VERSIONS.map(tsVersion => new ConsumingTsProject(tsVersion)))
@@ -13,9 +17,9 @@ function main() {
             return project
                 .compileDeclarations()
                 .then(() => project.appendTypesVersionsToPackageJson())
-                .then(() => project.tsConfig.outputDir)
-                .then(outputDir =>
-                    console.log(`Successfully published type definitions to: ${outputDir}`)
+                .then(() => project.tsConfig.typingsDir)
+                .then(typingsDir =>
+                    console.log(`Successfully wrote type definitions to: ${typingsDir}`)
                 );
         });
 }

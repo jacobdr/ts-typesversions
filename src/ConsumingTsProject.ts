@@ -79,7 +79,6 @@ export class ConsumingTsProject {
 
     compileDeclarations(removeTempFile = false) {
         return this.writeTempTsconfig(this.tsBin.packageRoot).then(writeResult => {
-            console.log("JDR DEBUG newTsConfigFilePath: ", writeResult.filePath);
             return this.tsBin
                 .execute(["--project", `${writeResult.filePath}`])
                 .then(removeTempFile ? FileOps.remove(writeResult.filePath) : writeResult.filePath);

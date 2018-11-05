@@ -13,7 +13,7 @@ export class TsBin {
     execute(args: string[] = []) {
         return ShellOps.exec(`${this.tsBinPath} ${args.join(" ")}`)
             .then(() => {
-                console.log(`Executed version: ${this.tsVersion} (${this.tsBinPath})`);
+                console.log(`Executed tsc version: ${this.tsVersion} (${this.tsBinPath})`);
                 return true;
             })
             .catch((err: Error) => {
