@@ -7,7 +7,8 @@ import { TupleLiteralToUnion } from "./Utils";
 
 // This assumes a structure like CONSUMER_PROJ/node_modules/ts-typesversions/dist/THIS_FILE, where
 // __dirname is dist
-const CONSUMING_PROJECT_ROOT = FileOps.join([__dirname, "..", "..", ".."], true);
+const CONSUMING_PROJECT_ROOT =
+    process.env.CONSUMING_PROJECT_ROOT || FileOps.join([__dirname, "..", "..", ".."], true);
 
 interface IPackageJson {
     main?: string;
@@ -36,8 +37,8 @@ export class ConsumingTsProject {
     }
 
     appendTypesVersionsToPackageJson(
-        tsVersions = this.tsVersions,
-        performWrite = true
+        modifyPackageJsonFile = true,
+        tsVersions = this.tsVersions
     ): BPromise<IPackageJsonWithTypesVersions> {
         return BPromise.all([
             FileOps.readJson<IPackageJson>(this.packageJsonPath),
@@ -69,7 +70,7 @@ export class ConsumingTsProject {
             })
             .then(
                 ({ jsonContents, fileAttributes }) =>
-                    performWrite
+                    modifyPackageJsonFile
                         ? FileOps.writeJsonFile(this.packageJsonPath, jsonContents, {
                               spaces: fileAttributes.amount,
                           })
@@ -77,20 +78,23 @@ export class ConsumingTsProject {
             );
     }
 
-    compileDeclarations(removeTempFile = false) {
-        return this.writeTempTsconfig(this.tsBin.packageRoot).then(writeResult => {
+    compileDeclarations(removeTempFile = true, compileOnly = false) {
+        return this.writeTempTsconfig(this.tsBin.packageRoot, compileOnly).then(writeResult => {
             return this.tsBin
                 .execute(["--project", `${writeResult.filePath}`])
-                .then(removeTempFile ? FileOps.remove(writeResult.filePath) : writeResult.filePath);
+                .then(
+                    () =>
+                        removeTempFile ? FileOps.remove(writeResult.filePath) : writeResult.filePath
+                );
         });
     }
 
     writeTempTsconfig(
         projectDirectory: string,
-        tempTsConfigPathForVersion = `tsconfig.${this.tsVersion}.json`,
-        tsVersions = this.tsVersions
+        compileOnly: boolean,
+        tempTsConfigPathForVersion = `tsconfig.${this.tsVersion}.json`
     ) {
-        return this.tsConfig.mergedTsconfigContents(tsVersions).then(mergedTsConfigContents => {
+        return this.tsConfig.mergedTsconfigContents(compileOnly).then(mergedTsConfigContents => {
             const newTsConfigFilePath = FileOps.join(
                 [projectDirectory, tempTsConfigPathForVersion],
                 true

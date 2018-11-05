@@ -3,10 +3,7 @@ import merge = require("webpack-merge");
 
 import { CompilerOptions } from "typescript-2.9";
 import { FileOps, FilePath, IReadJson } from "./FileOps";
-import { ISupportedTsVersions } from "./TsVersions";
-import { TupleLiteralToUnion } from "./Utils";
-
-type IAllowedTsVersion = TupleLiteralToUnion<ISupportedTsVersions>;
+import { IAllowedTsVersion } from "./TsVersions";
 
 export interface ITsConfigObject {
     exclude: string[];
@@ -114,24 +111,27 @@ export class TsConfig {
         });
     }
 
-    mergedTsconfigContents(tsVersionsToExclude: string[]): BPromise<ITsConfigObject> {
+    mergedTsconfigContents(compileCheckOnly = false): BPromise<ITsConfigObject> {
         return BPromise.all([this.outputDir, this.typingsDir, this.tsConfigContents]).then(
             ([outDir, typingsDir, originalTsConfig]) => {
-                const formatExcludeEntry = (_tsVersion: string) =>
-                    FileOps.join(
-                        [outDir, TsConfig.typingsDirName(this.tsVersionsDirPrefix, _tsVersion)],
-                        false
-                    );
+                const emitConfig = compileCheckOnly
+                    ? {
+                          emitDeclarationOnly: true,
+                          noEmit:
+                              originalTsConfig.compilerOptions &&
+                              originalTsConfig.compilerOptions.noEmit,
+                      }
+                    : { noEmit: true };
 
                 const generatedValues: ITsConfigObject = {
-                    exclude: tsVersionsToExclude.map(formatExcludeEntry),
+                    exclude: [outDir],
                     compilerOptions: {
                         declaration: true,
-                        emitDeclarationOnly: true,
                         declarationDir: typingsDir,
                         // Override noEmitOnError -- we shouldnt publish typings that are going
                         // to fail
                         noEmitOnError: true,
+                        ...emitConfig,
                     },
                 };
 
@@ -140,6 +140,7 @@ export class TsConfig {
                     "compilerOptions.emitDeclarationOnly": "replace",
                     "compilerOptions.declarationDir": "replace",
                     "compilerOptions.noEmitOnError": "replace",
+                    "compilerOptions.noEmit": "replace",
                 });
                 const mergedContents: ITsConfigObject = mergeWithStrategy(
                     originalTsConfig as any,
