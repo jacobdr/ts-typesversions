@@ -14,6 +14,8 @@ rules:
         options:
             - allow-leading-underscore
     object-literal-sort-keys:
-        - true
-        - match-declaration-order
+        options:
+            - match-declaration-order
+    prefer-template: false
+
 rulesDirectory: []
