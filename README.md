@@ -1,5 +1,7 @@
 # ts-typesversions
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/jacobdr/ts-typesversions.svg)](https://greenkeeper.io/)
+
 A library for Typescript package authors to:
 
 -   publish multiple type declaration files using the new [typesVersions](https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#version-selection-with-typesversions) feature available in Typescript 3.1
