@@ -42,17 +42,14 @@ export class TsConfig {
                 if (parseFloat(version) < parseFloat(TYPESCRIPT_MINIMUM_TS_VERSION)) {
                     return {};
                 }
+                const typingsOutputDir = FileOps.join(
+                    [outputDirectory, this.typingsDirName(tsVersionsDirPrefix, version)],
+                    false
+                );
+                const typingsOutputDirString = `${typingsOutputDir}/*`;
                 return {
                     [`>=${version}`]: {
-                        "*": [
-                            FileOps.join(
-                                [
-                                    outputDirectory,
-                                    this.typingsDirName(tsVersionsDirPrefix, version),
-                                ],
-                                false
-                            ),
-                        ],
+                        "*": [typingsOutputDirString],
                     },
                 };
             })
