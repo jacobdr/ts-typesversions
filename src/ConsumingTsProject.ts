@@ -2,8 +2,7 @@ import BPromise from "bluebird";
 import { FileOps } from "./FileOps";
 import { TsBin } from "./TsBin";
 import { ITypesVersionsSection, TsConfig } from "./TsConfigOps";
-import { DEFAULT_TYPESCRIPT_VERSIONS, ISupportedTsVersions } from "./TsVersions";
-import { TupleLiteralToUnion } from "./Utils";
+import { DEFAULT_TYPESCRIPT_VERSIONS, IAllowedTsVersion } from "./TsVersions";
 
 // This assumes a structure like CONSUMER_PROJ/node_modules/ts-typesversions/dist/THIS_FILE, where
 // __dirname is dist
@@ -23,11 +22,14 @@ export class ConsumingTsProject {
     readonly tsConfig: TsConfig;
 
     constructor(
-        readonly tsVersion: TupleLiteralToUnion<ISupportedTsVersions>,
+        readonly tsVersion: IAllowedTsVersion,
         readonly projectRoot: string = CONSUMING_PROJECT_ROOT,
         readonly tsConfigFilePath: string = FileOps.join([projectRoot, "tsconfig.json"], true),
         readonly tsVersions = DEFAULT_TYPESCRIPT_VERSIONS
     ) {
+        console.log(
+            `Initializing project from ${CONSUMING_PROJECT_ROOT} for TS version ${this.tsVersion}`
+        );
         this.tsBin = new TsBin(tsVersion, projectRoot);
         this.tsConfig = new TsConfig(tsConfigFilePath, tsVersion);
     }
@@ -37,8 +39,8 @@ export class ConsumingTsProject {
     }
 
     appendTypesVersionsToPackageJson(
-        modifyPackageJsonFile = true,
-        tsVersions = this.tsVersions
+        modifyPackageJsonFile: boolean,
+        tsVersions: IAllowedTsVersion[]
     ): BPromise<IPackageJsonWithTypesVersions> {
         return BPromise.all([
             FileOps.readJson<IPackageJson>(this.packageJsonPath),
@@ -52,9 +54,11 @@ export class ConsumingTsProject {
                     outputDir
                 );
 
+                const minimumTargetedVersion = tsVersions.sort()[0];
+
                 const legacyTypesPath = TsConfig.generateTypesSectionPath(
                     packageJson.contents.main,
-                    tsVersions,
+                    minimumTargetedVersion,
                     this.tsConfig.tsVersionsDirPrefix,
                     outputDir
                 );

@@ -1,9 +1,13 @@
 import BPromise from "bluebird";
 import merge = require("webpack-merge");
 
-import { CompilerOptions } from "typescript-2.9";
+import { CompilerOptions } from "typescript-2.7";
 import { FileOps, FilePath, IReadJson } from "./FileOps";
-import { IAllowedTsVersion } from "./TsVersions";
+import {
+    IAllowedTsVersion,
+    TYPESCRIPT_MINIMUM_DECLARATION_MAP_VERSION,
+    TYPESCRIPT_MINIMUM_TS_VERSION,
+} from "./TsVersions";
 
 export interface ITsConfigObject {
     exclude: string[];
@@ -34,26 +38,33 @@ export class TsConfig {
         return tsVersions
             .sort()
             .reverse()
-            .map(version => ({
-                [`>=${version}`]: {
-                    "*": [
-                        FileOps.join(
-                            [outputDirectory, this.typingsDirName(tsVersionsDirPrefix, version)],
-                            false
-                        ),
-                    ],
-                },
-            }))
+            .map(version => {
+                if (parseFloat(version) < parseFloat(TYPESCRIPT_MINIMUM_TS_VERSION)) {
+                    return {};
+                }
+                return {
+                    [`>=${version}`]: {
+                        "*": [
+                            FileOps.join(
+                                [
+                                    outputDirectory,
+                                    this.typingsDirName(tsVersionsDirPrefix, version),
+                                ],
+                                false
+                            ),
+                        ],
+                    },
+                };
+            })
             .reduce((prev, current) => ({ ...prev, ...current }), {});
     }
 
     static generateTypesSectionPath(
         packageJsonMainEntry: string | undefined,
-        tsVersions: IAllowedTsVersion[],
+        tsVersion: IAllowedTsVersion,
         tsVersionsDirPrefix: string,
         outputDirectory: string
     ) {
-        const lowestVersion = tsVersions.sort()[0];
         const currentPackageJsonEntryFile = packageJsonMainEntry
             ? FileOps.baseName(packageJsonMainEntry)
             : "index.js";
@@ -62,7 +73,7 @@ export class TsConfig {
         return FileOps.join(
             [
                 outputDirectory,
-                this.typingsDirName(tsVersionsDirPrefix, lowestVersion),
+                this.typingsDirName(tsVersionsDirPrefix, tsVersion),
                 entryDeclarationName,
             ],
             false
@@ -142,13 +153,30 @@ export class TsConfig {
                     "compilerOptions.noEmitOnError": "replace",
                     "compilerOptions.noEmit": "replace",
                 });
+
                 const mergedContents: ITsConfigObject = mergeWithStrategy(
                     originalTsConfig as any,
                     generatedValues as any
                 ) as any;
 
-                return mergedContents;
+                return this.omitTsConfigOptsByVersion(mergedContents);
             }
         );
+    }
+
+    omitTsConfigOptsByVersion(tsconfigContents: ITsConfigObject) {
+        const tsConfigCopy = { ...tsconfigContents };
+        if (parseFloat(this.tsVersion) < parseFloat(TYPESCRIPT_MINIMUM_DECLARATION_MAP_VERSION)) {
+            const omitKeys = ["declarationMap"];
+            console.log(
+                `Omitting the following keys because they are not compatible with ` +
+                    `TS version ${this.tsVersion}: ${omitKeys.join(", ")}`
+            );
+            omitKeys.forEach(omitKey => {
+                delete tsConfigCopy.compilerOptions[omitKey];
+            });
+        }
+
+        return tsConfigCopy;
     }
 }

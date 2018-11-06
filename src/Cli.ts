@@ -18,32 +18,39 @@ function stringToArray(input: string) {
 interface IMain {
     tsVersions?: IAllowedTsVersion[];
     declarations?: boolean;
-    compileOnly?: boolean;
+    compatibilityCheck?: boolean;
     debug?: boolean;
 }
 
 function main(config: IMain) {
     const typescriptVersions = config.tsVersions || DEFAULT_TYPESCRIPT_VERSIONS;
     const generateDeclarations = "declarations" in config ? config.declarations : true;
-    const compileCheckOnly = generateDeclarations && !!config.compileOnly;
-    const removeTempTsconfigFile = !!config.debug;
+    const compatibilityCheckOnly = generateDeclarations && !!config.compatibilityCheck;
+    const removeTempTsconfigFile = !config.debug;
+    const updatePackageJsonFile = !compatibilityCheckOnly;
 
     return BPromise.resolve()
         .then(() => typescriptVersions.map(tsVersion => new ConsumingTsProject(tsVersion)))
-        .mapSeries(project => FileOps.remove(project.tsConfig.typingsDir).then(() => project))
-        .mapSeries(project => {
-            console.log(`Starting compilation for TS version: ${project.tsConfig.tsVersion}`);
-            return project
-                .compileDeclarations(removeTempTsconfigFile, compileCheckOnly)
-                .then(() => project.appendTypesVersionsToPackageJson(!compileCheckOnly))
-                .then(() => project.tsConfig.typingsDir)
-                .then(typingsDir => {
-                    const message = compileCheckOnly
-                        ? `Compilation succeeded`
-                        : `Successfully wrote type definitions to: ${typingsDir}`;
-                    console.log(message);
-                });
-        });
+        .mapSeries(project =>
+            FileOps.remove(project.tsConfig.typingsDir).then(() => {
+                console.log(`Starting compilation for TS version: ${project.tsConfig.tsVersion}`);
+                return project
+                    .compileDeclarations(removeTempTsconfigFile, compatibilityCheckOnly)
+                    .then(() =>
+                        project.appendTypesVersionsToPackageJson(
+                            updatePackageJsonFile,
+                            typescriptVersions
+                        )
+                    )
+                    .then(() => project.tsConfig.typingsDir)
+                    .then(typingsDir => {
+                        const message = compatibilityCheckOnly
+                            ? `Compilation succeeded`
+                            : `Successfully wrote type definitions to: ${typingsDir}`;
+                        console.log(message);
+                    });
+            })
+        );
 }
 
 export const gatherUserResponses = () =>
@@ -52,7 +59,7 @@ export const gatherUserResponses = () =>
             {
                 type: "checkbox",
                 message: "Select Typescript versions to check compilation against",
-                name: "tsVersions",
+                name: "--ts-versions",
                 default: DEFAULT_TYPESCRIPT_VERSIONS,
                 choices: [new inquirer.Separator(" = TS Versions = "), ...tsVersionNames],
                 validate(answer) {
@@ -66,7 +73,7 @@ export const gatherUserResponses = () =>
                 type: "list",
                 message:
                     "Do you want to generate declarations or just check compilation compatibility?",
-                name: "compileOnly",
+                name: "--compatibility-check",
                 choices: [
                     { name: "Generate declarations", value: "" },
                     { name: "Compile only", value: "" },
@@ -89,9 +96,9 @@ export const gatherUserResponses = () =>
 
 export const commanderApp: commander.Command = commander
     .version(packageJson.version)
-    .option("-t, --tsVersions <items>", "Typescript versions to check", stringToArray)
+    .option("-t, --ts-versions <items>", "Typescript versions to check", stringToArray)
     .option(
-        "-c, --compileOnly",
+        "-c, --compatibility-check",
         "Only check compilation compatibility. Note: This will not generate declaration files"
     )
     .option(
