@@ -1,5 +1,7 @@
 # ts-typesversions
 
+[![Build Status](https://semaphoreci.com/api/v1/jacobdr/ts-typesversions/branches/master/badge.svg)](https://semaphoreci.com/jacobdr/ts-typesversions)
+
 A library for Typescript package authors to:
 
 -   publish multiple type declaration files using the new [typesVersions](https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#version-selection-with-typesversions) feature available in Typescript 3.1
