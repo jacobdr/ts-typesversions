@@ -20,8 +20,16 @@ There are two primary intended uses for this project:
 
 `yarn run ts-typesversions`
 
-This will invoke an interactive CLI where you can opt to (1) just check compilation compatibility
-with different versions of Typescript or (2) generate declaration files for different TS versions
+This will invoke an interactive CLI where you can opt to:
+
+1. just check compilation compatibility with different versions of Typescript
+2. generate declaration files for different TS versions
+
+For full usage instructions, run:
+
+```bash
+yarn run ts-typesversions --help
+```
 
 ### As Part of a Release Step
 
@@ -36,4 +44,11 @@ For example:
         "prepublishOnly": "rm -rf dist && tsc && yarn run ts-typesversions --declarations"
     }
 }
+```
+
+To limit the supported versions to only a subset of Typescript releases you can supply the
+`--ts-versions` option.
+
+```bash
+yarn run ts-typesversions --declarations --ts-versions 3.1,3.0,2.9,2.8
 ```
