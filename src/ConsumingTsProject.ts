@@ -1,7 +1,7 @@
 import BPromise from "bluebird";
 import { FileOps } from "./FileOps";
 import { TsBin } from "./TsBin";
-import { ITypesVersionsSection, TsConfig } from "./TsConfigOps";
+import { ITsConfigObject, ITypesVersionsSection, TsConfig } from "./TsConfigOps";
 import { DEFAULT_TYPESCRIPT_VERSIONS, IAllowedTsVersion } from "./TsVersions";
 
 // This assumes a structure like CONSUMER_PROJ/node_modules/ts-typesversions/dist/THIS_FILE, where
@@ -9,7 +9,7 @@ import { DEFAULT_TYPESCRIPT_VERSIONS, IAllowedTsVersion } from "./TsVersions";
 const CONSUMING_PROJECT_ROOT =
     process.env.CONSUMING_PROJECT_ROOT || FileOps.join([__dirname, "..", "..", ".."], true);
 
-interface IPackageJson {
+export interface IPackageJson {
     main?: string;
 }
 export interface IPackageJsonWithTypesVersions extends IPackageJson {
@@ -97,16 +97,18 @@ export class ConsumingTsProject {
         projectDirectory: string,
         compileOnly: boolean,
         tempTsConfigPathForVersion = `tsconfig.${this.tsVersion}.json`
-    ) {
+    ): BPromise<{ filePath: string; contents: ITsConfigObject }> {
         return this.tsConfig.mergedTsconfigContents(compileOnly).then(mergedTsConfigContents => {
             const newTsConfigFilePath = FileOps.join(
                 [projectDirectory, tempTsConfigPathForVersion],
                 true
             );
-            return {
-                contents: FileOps.writeJsonFile(newTsConfigFilePath, mergedTsConfigContents),
-                filePath: newTsConfigFilePath,
-            };
+            return FileOps.writeJsonFile(newTsConfigFilePath, mergedTsConfigContents).then(() => {
+                return {
+                    contents: mergedTsConfigContents,
+                    filePath: newTsConfigFilePath,
+                };
+            });
         });
     }
 }

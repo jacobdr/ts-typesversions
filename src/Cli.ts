@@ -86,7 +86,7 @@ export const gatherUserResponses = () =>
                 (cmdArray, k) => {
                     const value = answers[k];
                     const parsedValue: string = Array.isArray(value) ? value.join(",") : value;
-                    const nextArgs = [`--${k}`, parsedValue];
+                    const nextArgs = [`${k}`, parsedValue];
                     return [...cmdArray, ...nextArgs];
                 },
                 [] as string[]

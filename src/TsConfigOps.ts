@@ -2,7 +2,7 @@ import BPromise from "bluebird";
 import merge = require("webpack-merge");
 
 import { CompilerOptions } from "typescript-2.7";
-import { FileOps, FilePath, IReadJson } from "./FileOps";
+import { FileOps, FilePath, IFileAttributes, IReadJson } from "./FileOps";
 import {
     IAllowedTsVersion,
     TYPESCRIPT_MINIMUM_DECLARATION_MAP_VERSION,
@@ -104,7 +104,7 @@ export class TsConfig {
         return this._tsConfigRead.then(v => v.contents);
     }
 
-    get tsConfigAttributes() {
+    get tsConfigAttributes(): BPromise<IFileAttributes> {
         return this._tsConfigRead.then(v => v.fileAttributes);
     }
 
@@ -161,7 +161,7 @@ export class TsConfig {
         );
     }
 
-    omitTsConfigOptsByVersion(tsconfigContents: ITsConfigObject) {
+    omitTsConfigOptsByVersion(tsconfigContents: ITsConfigObject): ITsConfigObject {
         const tsConfigCopy = { ...tsconfigContents };
         if (parseFloat(this.tsVersion) < parseFloat(TYPESCRIPT_MINIMUM_DECLARATION_MAP_VERSION)) {
             const omitKeys = ["declarationMap"];
