@@ -1,6 +1,7 @@
 # ts-typesversions
 
 [![Build Status](https://semaphoreci.com/api/v1/jacobdr/ts-typesversions/branches/master/badge.svg)](https://semaphoreci.com/jacobdr/ts-typesversions)
+[![Greenkeeper badge](https://badges.greenkeeper.io/jacobdr/ts-typesversions.svg)](https://greenkeeper.io/)
 
 A library for Typescript package authors to:
 
