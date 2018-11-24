@@ -1525,9 +1525,11 @@ tslint-eslint-rules@^5.4.0:
     tslib "1.9.0"
     tsutils "^3.0.0"
 
-tslint-immutable@~4.9.0:
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/tslint-immutable/-/tslint-immutable-4.9.0.tgz#dcb3b7ea9173ddcc524d35f3c0adfa21516c75cf"
+tslint-immutable@~5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/tslint-immutable/-/tslint-immutable-5.0.0.tgz#6c0c23be1949a80a344576378aa499f05ef8bd22"
+  dependencies:
+    tsutils "^2.28.0 || ^3.0.0"
 
 tslint-microsoft-contrib@~5.2.0:
   version "5.2.1"
@@ -1567,6 +1569,12 @@ tsutils@^2.27.2:
 "tsutils@^2.27.2 <2.29.0":
   version "2.28.0"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.28.0.tgz#6bd71e160828f9d019b6f4e844742228f85169a1"
+  dependencies:
+    tslib "^1.8.1"
+
+"tsutils@^2.28.0 || ^3.0.0":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.5.1.tgz#2219e5f0ad728aef94bd6634a5b4d8ce6b2e2eea"
   dependencies:
     tslib "^1.8.1"
 
