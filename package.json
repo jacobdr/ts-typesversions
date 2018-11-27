@@ -38,7 +38,7 @@
         "prettier": "~1.14.3",
         "tslint": "~5.11.0",
         "tslint-config-airbnb": "~5.11.0",
-        "tslint-config-prettier": "~1.15.0",
+        "tslint-config-prettier": "~1.17.0",
         "tslint-immutable": "~4.9.0",
         "tslint-sonarts": "~1.8.0",
         "typescript": "npm:typescript@3.1.x"
