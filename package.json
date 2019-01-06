@@ -25,7 +25,7 @@
         "typescript-2.9": "npm:typescript@2.9.x",
         "typescript-3.0": "npm:typescript@3.0.x",
         "typescript-3.1": "npm:typescript@3.1.x",
-        "webpack-merge": "~4.1.4"
+        "webpack-merge": "~4.2.1"
     },
     "devDependencies": {
         "@types/bluebird": "~3.5.24",
