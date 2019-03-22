@@ -1525,9 +1525,12 @@ tslint-eslint-rules@^5.4.0:
     tslib "1.9.0"
     tsutils "^3.0.0"
 
-tslint-immutable@~4.9.0:
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/tslint-immutable/-/tslint-immutable-4.9.0.tgz#dcb3b7ea9173ddcc524d35f3c0adfa21516c75cf"
+tslint-immutable@~5.5.1:
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/tslint-immutable/-/tslint-immutable-5.5.1.tgz#3861dda7aaa653ace6539121624e074e9e761318"
+  integrity sha512-f/0nD4QGroIMI6XxVCfCbyCpbD3Fm+0Kz7PAbIQYHonGaykZj9QNa1fs1ZPB37rHnudwFKY9coQ4AohZJ6KW1Q==
+  dependencies:
+    tsutils "^2.28.0 || ^3.0.0"
 
 tslint-microsoft-contrib@~5.2.0:
   version "5.2.1"
@@ -1567,6 +1570,13 @@ tsutils@^2.27.2:
 "tsutils@^2.27.2 <2.29.0":
   version "2.28.0"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.28.0.tgz#6bd71e160828f9d019b6f4e844742228f85169a1"
+  dependencies:
+    tslib "^1.8.1"
+
+"tsutils@^2.28.0 || ^3.0.0":
+  version "3.9.1"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.9.1.tgz#2a40dc742943c71eca6d5c1994fcf999956be387"
+  integrity sha512-hrxVtLtPqQr//p8/msPT1X1UYXUjizqSit5d9AQ5k38TcV38NyecL5xODNxa73cLe/5sdiJ+w1FqzDhRBA/anA==
   dependencies:
     tslib "^1.8.1"
 
