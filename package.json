@@ -19,7 +19,7 @@
         "inquirer": "~6.2.0",
         "jsonfile": "~5.0.0",
         "source-map-support": "^0.5.9",
-        "strip-json-comments": "~2.0.1",
+        "strip-json-comments": "~3.0.0",
         "typescript-2.7": "npm:typescript@2.7.x",
         "typescript-2.8": "npm:typescript@2.8.x",
         "typescript-2.9": "npm:typescript@2.9.x",
