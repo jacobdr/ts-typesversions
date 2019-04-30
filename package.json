@@ -15,7 +15,7 @@
         "bluebird": "~3.5.2",
         "commander": "~2.19.0",
         "debug": "~4.1.0",
-        "detect-indent": "~5.0.0",
+        "detect-indent": "~6.0.0",
         "inquirer": "~6.2.0",
         "jsonfile": "~5.0.0",
         "source-map-support": "^0.5.9",
