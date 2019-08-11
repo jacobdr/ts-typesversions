@@ -16,7 +16,7 @@
         "commander": "~2.19.0",
         "debug": "~4.1.0",
         "detect-indent": "~5.0.0",
-        "inquirer": "~6.2.0",
+        "inquirer": "~6.5.1",
         "jsonfile": "~5.0.0",
         "source-map-support": "^0.5.9",
         "strip-json-comments": "~2.0.1",
