@@ -12,7 +12,7 @@
         "node": ">=8"
     },
     "dependencies": {
-        "bluebird": "~3.5.2",
+        "bluebird": "~3.6.0",
         "commander": "~2.19.0",
         "debug": "~4.1.0",
         "detect-indent": "~5.0.0",
